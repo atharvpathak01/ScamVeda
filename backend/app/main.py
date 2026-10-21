@@ -77,7 +77,6 @@ def analyze_message(request: AnalyzeRequest):
                 "arrest warrant",
                 "parcel seized",
                 "calling from your bank",
-                "police officer",
             ],
             "A possible impersonation or intimidation tactic",
         ),

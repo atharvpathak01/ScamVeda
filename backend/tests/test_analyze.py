@@ -99,3 +99,20 @@ def test_digital_arrest_message_returns_warning():
     assert any(
         "impersonation" in warning for warning in result["warnings"]
     )
+
+
+
+def test_ordinary_police_reference_is_not_flagged():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "I watched a documentary about a police officer yesterday."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["risk"] == "Low"
+    assert result["warnings"] == []
