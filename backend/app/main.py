@@ -96,13 +96,93 @@ def analyze_message(request: AnalyzeRequest):
     else:
         risk = "Low"
 
-    if warnings:
-        advice = [
-            "Do not share OTPs, PINs, passwords, or banking details.",
-            "Verify requests through an official app or contact number.",
-            "Avoid clicking unexpected links or sending money under pressure.",
+    # Generate safety advice based on the message content.
+    advice = []
+
+    if any(
+        keyword in message
+        for keyword in [
+            "otp",
+            "one time password",
+            "verification code",
+            "upi pin",
+            "share your pin",
+            "bank password",
         ]
-    else:
+    ):
+        advice.append(
+            "Never share OTPs, UPI PINs, passwords, or verification codes."
+        )
+
+    if any(
+        keyword in message
+        for keyword in [
+            "kyc expired",
+            "update your kyc",
+            "kyc update",
+            "pan card update",
+            "bank account will be blocked",
+        ]
+    ):
+        advice.append(
+            "Check your KYC status through your bank's official app "
+            "or verified customer-support number."
+        )
+
+    if any(
+        keyword in message
+        for keyword in [
+            "job offer",
+            "registration fee",
+            "interview fee",
+            "pay to apply",
+            "training fee",
+        ]
+    ):
+        advice.append(
+            "Verify the employer and vacancy through official channels "
+            "before paying any recruitment-related fee."
+        )
+
+    if any(
+        keyword in message
+        for keyword in [
+            "parcel seized",
+            "parcel has been seized",
+            "parcel release fee",
+            "release your parcel",
+        ]
+    ):
+        advice.append(
+            "Check parcel status using the courier's official tracking "
+            "service. Do not pay unexpected release fees through a message link."
+        )
+
+    if any(
+        keyword in message
+        for keyword in ["http://", "https://", "bit.ly", "click here"]
+    ):
+        advice.append(
+            "Avoid unexpected links. Do not enter passwords, banking "
+            "details, or OTPs on pages opened from suspicious messages."
+        )
+
+    if any(
+        keyword in message
+        for keyword in ["pay now", "send money", "processing fee"]
+    ):
+        advice.append(
+            "Do not send money under pressure. Independently verify the "
+            "request with the relevant organization first."
+        )
+
+    if warnings and not advice:
+        advice.append(
+            "Pause and verify the sender and request using an independently "
+            "verified official contact method."
+        )
+
+    if not warnings:
         advice = [
             "No listed warning patterns were detected, but scams can still be missed.",
             "Verify the sender and any unexpected requests independently.",
