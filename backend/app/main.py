@@ -76,9 +76,12 @@ def analyze_message(request: AnalyzeRequest):
                 "digital arrest",
                 "arrest warrant",
                 "parcel seized",
+                "parcel has been seized",
+                "parcel release fee",
+                "release your parcel",
                 "calling from your bank",
             ],
-            "A possible impersonation or intimidation tactic",
+            "A possible impersonation, parcel scam, or intimidation tactic",
         ),
     ]
 

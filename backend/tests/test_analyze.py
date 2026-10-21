@@ -116,3 +116,39 @@ def test_ordinary_police_reference_is_not_flagged():
     result = response.json()
     assert result["risk"] == "Low"
     assert result["warnings"] == []
+
+
+
+def test_ordinary_bank_reference_is_not_flagged():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "I visited the bank today to ask about my savings account."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["risk"] == "Low"
+    assert result["warnings"] == []
+
+
+
+def test_parcel_seizure_and_payment_message_returns_warning():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "Your parcel has been seized. "
+                "Pay the processing fee immediately to release it."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["risk"] in ["Medium", "High"]
+    assert len(result["warnings"]) >= 2
+    assert "safety_advice" in result
