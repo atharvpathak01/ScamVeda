@@ -101,7 +101,6 @@ def test_digital_arrest_message_returns_warning():
     )
 
 
-
 def test_ordinary_police_reference_is_not_flagged():
     response = client.post(
         "/analyze",
@@ -116,7 +115,6 @@ def test_ordinary_police_reference_is_not_flagged():
     result = response.json()
     assert result["risk"] == "Low"
     assert result["warnings"] == []
-
 
 
 def test_ordinary_bank_reference_is_not_flagged():
@@ -135,7 +133,6 @@ def test_ordinary_bank_reference_is_not_flagged():
     assert result["warnings"] == []
 
 
-
 def test_parcel_seizure_and_payment_message_returns_warning():
     response = client.post(
         "/analyze",
@@ -152,3 +149,60 @@ def test_parcel_seizure_and_payment_message_returns_warning():
     assert result["risk"] in ["Medium", "High"]
     assert len(result["warnings"]) >= 2
     assert "safety_advice" in result
+
+
+def test_kyc_message_returns_specific_safety_advice():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "Your KYC expired. Update your KYC or "
+                "your bank account will be blocked."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert any(
+        "KYC status" in advice
+        for advice in result["safety_advice"]
+    )
+
+
+def test_job_fee_message_returns_specific_safety_advice():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "Congratulations on your job offer. "
+                "Pay a registration fee to continue."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert any(
+        "employer" in advice
+        for advice in result["safety_advice"]
+    )
+
+
+def test_parcel_message_returns_specific_safety_advice():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "Your parcel has been seized. "
+                "Pay the processing fee immediately to release it."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert any(
+        "courier's official tracking" in advice
+        for advice in result["safety_advice"]
+    )
