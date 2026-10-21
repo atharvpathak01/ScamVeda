@@ -51,6 +51,36 @@ def analyze_message(request: AnalyzeRequest):
             ["http://", "https://", "bit.ly", "click here"],
             "A link or instruction to click a link",
         ),
+        (
+            [
+                "kyc expired",
+                "update your kyc",
+                "kyc update",
+                "pan card update",
+                "bank account will be blocked",
+            ],
+            "A bank or KYC alert that should be verified independently",
+        ),
+        (
+            [
+                "job offer",
+                "registration fee",
+                "interview fee",
+                "pay to apply",
+                "training fee",
+            ],
+            "A job offer or recruitment fee that needs careful verification",
+        ),
+        (
+            [
+                "digital arrest",
+                "arrest warrant",
+                "parcel seized",
+                "calling from your bank",
+                "police officer",
+            ],
+            "A possible impersonation or intimidation tactic",
+        ),
     ]
 
     for keywords, warning in checks:

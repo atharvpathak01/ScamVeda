@@ -51,3 +51,51 @@ def test_message_over_limit_is_rejected():
     )
 
     assert response.status_code == 422
+
+
+def test_kyc_alert_returns_warning():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "Your KYC expired. "
+                "Update your KYC or your bank account will be blocked."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["risk"] == "Medium"
+    assert any("KYC" in warning for warning in result["warnings"])
+
+
+def test_job_registration_fee_returns_warning():
+    response = client.post(
+        "/analyze",
+        json={
+            "message": (
+                "Congratulations on your job offer. "
+                "Pay a registration fee to continue."
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["risk"] == "Medium"
+    assert any("job offer" in warning for warning in result["warnings"])
+
+
+def test_digital_arrest_message_returns_warning():
+    response = client.post(
+        "/analyze",
+        json={"message": "An officer says this is a digital arrest."},
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["risk"] == "Medium"
+    assert any(
+        "impersonation" in warning for warning in result["warnings"]
+    )
